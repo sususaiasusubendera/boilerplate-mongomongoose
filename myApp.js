@@ -48,28 +48,28 @@ const createManyPeople = (arrayOfPeople, done) => {
 /* 5. use model.find to search your database */
 const findPeopleByName = (personName, done) => {
   Person.find({name: personName}, (err, data) => {
-    if (err) console.error(err);
+    if (err) return console.error(err);
     done(null, data);
-  })
+  });
 };
 
 /* 6. use model.findOne() to return a single matching document from your database */
 const findOneByFood = (food, done) => {
   Person.findOne({favoriteFoods: food}, (err, data) => {
-    if (err) console.error(err);
+    if (err) return console.error(err);
     done(null, data);
-  })
+  });
 };
 
-/* 6. use model.findById() to search your database by _id */
+/* 7. use model.findById() to search your database by _id */
 const findPersonById = (personId, done) => {
   Person.findById({_id: personId}, (err, data) => {
-    if (err) console.error(err);
+    if (err) return console.error(err);
     done(null, data);
   })
 };
 
-/* 6. perform classic updates by running find, edit, then save */
+/* 8. perform classic updates by running find, edit, then save */
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
 
@@ -82,32 +82,48 @@ const findEditThenSave = (personId, done) => {
 
     /* find callback(?) - save() the updated Person */
     data.save((err, updatedData) => {
-      if (err) console.error(err);
+      if (err) return console.error(err);
       done(null, updatedData);
     });
   });
 };
 
+/* 9. perform new updates on a document using model.findeOneAndUPdate() */
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
 
-  done(null /*, data*/);
+  Person.findOneAndUpdate({name: personName}, {age: ageToSet}, {new: true}, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+/* 10. delete one document using model.findByIdAndRemove */
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findByIdAndRemove({_id: personId}, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+/* 11. delete many documents with model.remove */ 
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
 
-  done(null /*, data*/);
+  Person.remove({name: nameToRemove}, (err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
+/* chain search query helpers to narrow search results */
 const queryChain = (done) => {
   const foodToSearch = "burrito";
 
-  done(null /*, data*/);
+  Person.find({favoriteFoods: foodToSearch}).sort({name: 1}).limit(2).select({age: 0}).exec((err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  });
 };
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
